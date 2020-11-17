@@ -124,7 +124,7 @@ export class Command {
       index++;
     }
 
-    if ((this.help && res.h) || (this.opt.demandArgument && (Object.keys(res).length === 0))) {
+    if (this.help && (res.h || (this.opt.demandArgument && (Object.keys(res).length === 0)))) {
       this.renderHelp();
       process.exit();
     }

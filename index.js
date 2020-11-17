@@ -123,7 +123,7 @@ var Command = /** @class */ (function () {
             if (typeof state_1 === "object")
                 return state_1.value;
         }
-        if ((this.help && res.h) || (this.opt.demandArgument && (Object.keys(res).length === 0))) {
+        if (this.help && (res.h || (this.opt.demandArgument && (Object.keys(res).length === 0)))) {
             this.renderHelp();
             process.exit();
         }

@@ -1,0 +1,9 @@
+{
+  "name": "tauris",
+  "version": "1.0.0",
+  "description": "A simple Node.JS argument parser with subcommand support and a beautilful UI",
+  "main": "index.js",
+  "repository": "https://github.com/codemaster138/node-tauris.git",
+  "author": "Jake <pygamer138@gmail.com>",
+  "license": "MIT"
+}

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>API Reference | Tauris Docs</title>
+    <link rel="stylesheet" href="/index.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+        integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+        rel="preload" as="style" onload="this.rel='stylesheet'">
+    <noscript>
+        <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+            rel="stylesheet">
+    </noscript>
+    
+    
+</head>
+
+<body>
+    <aside>
+        
+        
+        <h3 class="group-name">Getting Started</h3>
+        
+        
+        
+        
+        
+        <a href="/introduction" class="">Intro</a>
+        
+        
+        
+        
+        <a href="/example" class="">Example</a>
+        
+        
+        
+        <h3 class="group-name">API Reference</h3>
+        
+        
+        
+        
+        
+        <a href="/api#" class="">API Reference</a>
+        
+        
+        
+        
+        <a href="/api#class-command" class="">Class: &#39;Command&#39;</a>
+        
+        
+        
+        
+        <a href="/api#commandoption" class="">Command.option()</a>
+        
+        
+        
+        
+        <a href="/api#commanddescribe" class="">Command.describe()</a>
+        
+        
+        
+        
+        <a href="/api#commandcommand" class="">Command.command()</a>
+        
+        
+        
+        
+        <a href="/api#commandhandler" class="">Command.handler()</a>
+        
+        
+        
+        
+        <a href="/api#commanddemandargument" class="">Command.demandArgument()</a>
+        
+        
+        
+        
+        <a href="/api#commandheader" class="">Command.header()</a>
+        
+        
+        
+        
+        <a href="/api#commandusage" class="">Command.usage()</a>
+        
+        
+        
+        
+        <a href="/api#commandnohelp" class="">Command.noHelp()</a>
+        
+        
+        
+        
+        <a href="/api#commandparse" class="">Command.parse()</a>
+        
+        
+    </aside>
+    <div class="hamburger">
+        <div class="line" id="l1"></div>
+        <div class="line" id="l2"></div>
+        <div class="line" id="l3"></div>
+    </div>
+    <a href="/" id="logo-icon">
+        <img src="/assets/logo-icon.svg" alt="" aria-hidden="true">
+    </a>
+    <main>
+        <h1 class="title">API Reference</h1>
+        <h2 id="class-command">Class <code>Command</code></h2>
+<p>The class <code>Command</code> is used for both subcommands and your top-level command. The method <code>parse</code> takes in <code>argv</code> without the binary path and file path. The command&#39;s other methods are used to configure it:
+<br/></p>
+<h3 id="commandoption">Command.option</h3>
+<p>The method <code>Command.option(name: string[, options: CLIOptionOptions])</code> configures a new option on the command. The <em>optional</em> <code>options</code> argument has three properties:</p>
+<ul>
+<li><code>alias: string[]</code> An <strong>array</strong> of aliases</li>
+<li><code>description: string</code> A description to be shown in the help message</li>
+<li><code>type: &#39;text&#39; | &#39;number&#39; | &#39;boolean&#39;</code> Option type<ul>
+<li><code>text</code> The following text will be set as the option value</li>
+<li><code>number</code> Like <code>text</code>, but ignored when the value is non-numeric</li>
+<li><code>boolean</code> The following value is not counted as part of the option. When the option is set as a flag, it&#39;s value will be <code>true</code>, else <code>undefined</code>.</li>
+</ul>
+</li>
+</ul>
+<p>Returns the command it was invoked on.
+<br/></p>
+<h3 id="commanddescribe">Command.describe</h3>
+<p>The method <code>Command.describe(message: string)</code> adds a description to the command. This will be displayed in the help message <em>if the command is a subcommand</em>. </p>
+<p>Returns the command it was invoked on.
+<br/></p>
+<h3 id="commandcommand">Command.command</h3>
+<p>The method <code>Command.command(command: Command)</code> adds a <strong>subcommand</strong> (!!) to the Command. This subcommand is simply another instance of the <code>Command</code> class.</p>
+<p>Returns the command it was invoked on.
+<br/></p>
+<h3 id="commandhandler">Command.handler</h3>
+<p>When the <code>Command</code> is intended to be used as a <strong>subcommand</strong>, call this method to add a handler that will be called when the subcommand is invoked.</p>
+<p>Signature: <code>Command.handler(((argv: { [key: string]: any }) =&gt; void)): Command</code></p>
+<p>Returns the command it was invoked on.
+<br/></p>
+<h3 id="commanddemandargument">Command.demandArgument</h3>
+<p>Call this method to enforce that at least one option <em>or</em> subcommand <em>or</em> parameter must be passed and otherwise show a help message.</p>
+<p>Returns the command it was invoked on.
+<br/></p>
+<h3 id="commandheader">Command.header</h3>
+<p>A message displayed above the help message.</p>
+<p>Signature: <code>Command.header(message: string): Command</code></p>
+<p>Returns the command it was invoked on.
+<br/></p>
+<h3 id="commandusage">Command.usage</h3>
+<p>Override the usage message.</p>
+<p>Signature: <code>Command.usage(message: string): Command</code></p>
+<p>Return the command it was invoked on.
+<br/></p>
+<h3 id="commandnohelp">Command.noHelp</h3>
+<p>Disable the help message.</p>
+<p>Signature: <code>Command.usage(): Command</code></p>
+<p>Returns the command it was invoked on.
+<br/></p>
+<h3 id="commandparse">Command.parse</h3>
+<p>The method <code>parse</code> takes in <code>argv</code> without the binary path and file path.</p>
+<br/>
+
+<p>Signature: <code>Command.parse(argv: string[]): { [key: string]: any }</code></p>
+<p>Example: <code>... .parse(process.argv.slice(2))</code></p>
+<br/>
+
+<p>Returns the parsed arguments.</p>
+
+    </main>
+    <script>
+        const hamburger = document.querySelector('.hamburger');
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('close');
+            document.body.classList.toggle('show-nav');
+        });
+    </script>
+</body>
+
+</html>

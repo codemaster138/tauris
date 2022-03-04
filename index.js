@@ -6,24 +6,31 @@ var CLIOption = /** @class */ (function () {
     function CLIOption(name, options) {
         this.name = name;
         this.alias = (options === null || options === void 0 ? void 0 : options.alias) || [];
-        this.type = (options === null || options === void 0 ? void 0 : options.type) || 'text';
-        this.description = (options === null || options === void 0 ? void 0 : options.description) || 'No description provided';
+        this.type = (options === null || options === void 0 ? void 0 : options.type) || "text";
+        this.description = (options === null || options === void 0 ? void 0 : options.description) || "No description provided";
     }
     return CLIOption;
 }());
 var Command = /** @class */ (function () {
-    function Command(name) {
-        this.description = 'No description provided';
-        this.options = [
-            new CLIOption('h', { alias: ['help'], type: 'boolean', description: 'Display this help message' }),
-        ];
+    function Command(name, opts) {
+        this.description = "No description provided";
         this.help = true;
-        this.helpHeader = '';
+        this.helpHeader = "";
         this.opt = {};
         this.subcommands = [];
         this._handler = function () { };
         this.name = name;
         this.usageString = this.name + " [...options]";
+        if (opts.noDefaultHelpOption)
+            this.options = [];
+        else
+            this.options = [
+                new CLIOption("h", {
+                    alias: ["help"],
+                    type: "boolean",
+                    description: "Display this help message",
+                }),
+            ];
     }
     /**
      * Add a description
@@ -68,7 +75,7 @@ var Command = /** @class */ (function () {
         var _loop_1 = function () {
             var isOption = false;
             var stripped = argv[index];
-            while (stripped.startsWith('-')) {
+            while (stripped.startsWith("-")) {
                 isOption = true;
                 stripped = stripped.slice(1);
             }
@@ -77,15 +84,15 @@ var Command = /** @class */ (function () {
                 this_1.options.forEach(function (option) {
                     if (option.name === stripped || option.alias.includes(stripped)) {
                         done_1 = true;
-                        if (option.name === 'parameters')
+                        if (option.name === "parameters")
                             return;
-                        if (option.type === 'boolean') {
+                        if (option.type === "boolean") {
                             res[option.name] = true;
                         }
-                        else if (option.type === 'text') {
+                        else if (option.type === "text") {
                             res[option.name] = argv[++index];
                         }
-                        else if (option.type === 'number') {
+                        else if (option.type === "number") {
                             index++;
                             if (isNaN(parseFloat(argv[index]))) {
                                 _this.renderHelp();
@@ -113,7 +120,9 @@ var Command = /** @class */ (function () {
                     return { value: false };
                 }
                 else
-                    Array.isArray(res.parameters) ? res.parameters.push(stripped) : (res.parameters = [stripped]);
+                    Array.isArray(res.parameters)
+                        ? res.parameters.push(stripped)
+                        : (res.parameters = [stripped]);
             }
             index++;
         };
@@ -123,7 +132,8 @@ var Command = /** @class */ (function () {
             if (typeof state_1 === "object")
                 return state_1.value;
         }
-        if (this.help && (res.h || (this.opt.demandArgument && (Object.keys(res).length === 0)))) {
+        if (this.help &&
+            (res.h || (this.opt.demandArgument && Object.keys(res).length === 0))) {
             this.renderHelp();
             process.exit();
         }
@@ -154,26 +164,33 @@ var Command = /** @class */ (function () {
             console.log(this.helpHeader);
             console.log();
         }
-        console.log(chalk_1.white.bold('Usage:') + "\n\n  " + chalk_1.gray.bold('$') + " " + chalk_1.cyan(this.usageString) + "\n");
-        console.log(chalk_1.white.bold('Options:') + "\n");
+        console.log(chalk_1.white.bold("Usage:") + "\n\n  " + chalk_1.gray.bold("$") + " " + chalk_1.cyan(this.usageString) + "\n");
+        console.log(chalk_1.white.bold("Options:") + "\n");
         var optionToString = function (option) {
             return [
-                (option.name.length === 1 ? '-' : '--') + option.name,
-                option.alias.map(function (alias) { return (alias.length === 1 ? ' -' : '--') + alias; }),
-            ].join(', ');
+                (option.name.length === 1 ? "-" : "--") + option.name,
+                option.alias.map(function (alias) { return (alias.length === 1 ? " -" : "--") + alias; }),
+            ].join(", ");
         };
         var longest = ((_a = this.options.map(optionToString).sort(function (a, b) { return b.length - a.length; })[0]) === null || _a === void 0 ? void 0 : _a.length) + 5;
-        if ((((_b = this.subcommands.map(function (cmd) { return cmd.name; }).sort(function (a, b) { return b.length - a.length; })[0]) === null || _b === void 0 ? void 0 : _b.length) + 5) > longest) {
-            longest = ((_c = this.subcommands.map(function (cmd) { return cmd.name; }).sort(function (a, b) { return b.length - a.length; })[0]) === null || _c === void 0 ? void 0 : _c.length) + 5;
+        if (((_b = this.subcommands
+            .map(function (cmd) { return cmd.name; })
+            .sort(function (a, b) { return b.length - a.length; })[0]) === null || _b === void 0 ? void 0 : _b.length) +
+            5 >
+            longest) {
+            longest =
+                ((_c = this.subcommands
+                    .map(function (cmd) { return cmd.name; })
+                    .sort(function (a, b) { return b.length - a.length; })[0]) === null || _c === void 0 ? void 0 : _c.length) + 5;
         }
         this.options.forEach(function (option) {
-            console.log("  " + chalk_1.cyan(optionToString(option)) + " " + chalk_1.gray('.').repeat(longest - optionToString(option).length) + " " + option.description);
+            console.log("  " + chalk_1.cyan(optionToString(option)) + " " + chalk_1.gray(".").repeat(longest - optionToString(option).length) + " " + option.description);
         });
         console.log();
         if (this.subcommands.length > 0) {
-            console.log(chalk_1.white.bold('Commands:') + "\n");
+            console.log(chalk_1.white.bold("Commands:") + "\n");
             this.subcommands.forEach(function (cmd) {
-                console.log("  " + chalk_1.cyan(cmd.name) + " " + chalk_1.gray('.').repeat(longest - cmd.name.length) + " " + cmd.description);
+                console.log("  " + chalk_1.cyan(cmd.name) + " " + chalk_1.gray(".").repeat(longest - cmd.name.length) + " " + cmd.description);
             });
             console.log();
         }
@@ -194,8 +211,10 @@ var Command = /** @class */ (function () {
         this.subcommands.push(cmd);
         return this;
     };
-    Command.prototype.callHandler = function (argv) { if (argv)
-        this._handler(argv); };
+    Command.prototype.callHandler = function (argv) {
+        if (argv)
+            this._handler(argv);
+    };
     return Command;
 }());
 exports.Command = Command;

@@ -37,10 +37,10 @@ interface CommandOptions {
 }
 
 export class Command {
-  constructor(name: string, opts: CommandOptions) {
+  constructor(name: string, opts?: CommandOptions) {
     this.name = name;
     this.usageString = `${this.name} [...options]`;
-    if (opts.noDefaultHelpOption) this.options = [];
+    if (opts?.noDefaultHelpOption) this.options = [];
     else
       this.options = [
         new CLIOption("h", {

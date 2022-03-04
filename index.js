@@ -21,7 +21,7 @@ var Command = /** @class */ (function () {
         this._handler = function () { };
         this.name = name;
         this.usageString = this.name + " [...options]";
-        if (opts.noDefaultHelpOption)
+        if (opts === null || opts === void 0 ? void 0 : opts.noDefaultHelpOption)
             this.options = [];
         else
             this.options = [

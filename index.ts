@@ -279,7 +279,7 @@ export class Command {
     return this;
   }
 
-  private root(): Command {
+  root(): Command {
     return this.parent ? this.parent.root() : this;
   }
 
@@ -287,7 +287,7 @@ export class Command {
   private usageString: string;
   private options: CLIOption[];
   protected name: string;
-  protected parent: Command | undefined;
+  public parent: Command | undefined;
   private help: boolean = true;
   private helpHeader: string = "";
   private opt: Opt = {};

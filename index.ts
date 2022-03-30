@@ -36,6 +36,8 @@ interface CommandOptions {
   noDefaultHelpOption?: boolean;
 }
 
+export class UsageError extends Error {}
+
 export class Command {
   constructor(name: string, opts?: CommandOptions) {
     this.name = name;
@@ -91,7 +93,15 @@ export class Command {
    * Parse arguments into an object
    * @param argv Raw process arguments, without binary and file location (e.g. `process.argv.slice(2)`)
    */
-  parse(argv: string[]): { [key: string]: any } | false {
+  parse(
+    argv: string[],
+    options?: {
+      /**
+       * Throw an error instead of exiting
+       */
+      noExit: boolean;
+    }
+  ): { [key: string]: any } | false {
     var res: { [key: string]: any } = {};
     var index = 0;
 
@@ -118,6 +128,12 @@ export class Command {
               index++;
               if (isNaN(parseFloat(argv[index]))) {
                 this.renderHelp();
+                if (options?.noExit)
+                  throw new UsageError(
+                    `Expected a number for option ${
+                      option.name.length > 1 ? "-" : "--"
+                    }${option.name}`
+                  );
                 process.exit();
               } else {
                 res[option.name] = argv[index];
@@ -151,7 +167,7 @@ export class Command {
       (res.h || (this.opt.demandArgument && Object.keys(res).length === 0))
     ) {
       this.renderHelp();
-      process.exit();
+      return false;
     }
 
     return res;
@@ -258,20 +274,20 @@ export class Command {
    * @param cmd Subcommand to attach
    */
   command(cmd: Command) {
-		cmd.parent = this;
+    cmd.parent = this;
     this.subcommands.push(cmd);
     return this;
   }
 
-	private root(): Command {
-		return this.parent ? this.parent.root() : this;
-	}
+  private root(): Command {
+    return this.parent ? this.parent.root() : this;
+  }
 
   description: string = "No description provided";
   private usageString: string;
   private options: CLIOption[];
   protected name: string;
-	protected parent: Command | undefined;
+  protected parent: Command | undefined;
   private help: boolean = true;
   private helpHeader: string = "";
   private opt: Opt = {};

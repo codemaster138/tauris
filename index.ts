@@ -295,5 +295,5 @@ export class Command {
   protected callHandler(argv: { [key: string]: any } | false) {
     if (argv) this._handler(argv);
   }
-  protected _handler: (argv: { [key: string]: any }) => void = () => {};
+  protected _handler: (this: Command, argv: { [key: string]: any }) => void = () => {};
 }

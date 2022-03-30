@@ -264,7 +264,7 @@ export class Command {
    * Called when the command is invoked as a subcommand
    * @param callback Callback
    */
-  handler(callback: (argv: { [key: string]: any }) => void) {
+  handler(callback: (this: Command, argv: { [key: string]: any }) => void) {
     this._handler = callback;
     return this;
   }

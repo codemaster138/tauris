@@ -258,14 +258,20 @@ export class Command {
    * @param cmd Subcommand to attach
    */
   command(cmd: Command) {
+		cmd.parent = this;
     this.subcommands.push(cmd);
     return this;
   }
+
+	private root(): Command {
+		return this.parent ? this.parent.root() : this;
+	}
 
   description: string = "No description provided";
   private usageString: string;
   private options: CLIOption[];
   protected name: string;
+	protected parent: Command | undefined;
   private help: boolean = true;
   private helpHeader: string = "";
   private opt: Opt = {};

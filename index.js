@@ -208,8 +208,12 @@ var Command = /** @class */ (function () {
      * @param cmd Subcommand to attach
      */
     Command.prototype.command = function (cmd) {
+        cmd.parent = this;
         this.subcommands.push(cmd);
         return this;
+    };
+    Command.prototype.root = function () {
+        return this.parent ? this.parent.root() : this;
     };
     Command.prototype.callHandler = function (argv) {
         if (argv)

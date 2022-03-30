@@ -6,7 +6,7 @@
     "scripts": {
         "build": "tsc",
         "prepublish": "yarn build",
-        "postpublish": "git add index.js && git commit -m \"chore: commit & publish\""
+        "postpublish": "git add index.js && git commit -m \"chore: compile & publish\""
     },
     "repository": "https://github.com/codemaster138/node-tauris.git",
     "author": "Jake <pygamer138@gmail.com>",

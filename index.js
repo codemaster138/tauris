@@ -1,6 +1,19 @@
 "use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Command = void 0;
+exports.Command = exports.UsageError = void 0;
 var chalk_1 = require("chalk");
 var CLIOption = /** @class */ (function () {
     function CLIOption(name, options) {
@@ -11,6 +24,14 @@ var CLIOption = /** @class */ (function () {
     }
     return CLIOption;
 }());
+var UsageError = /** @class */ (function (_super) {
+    __extends(UsageError, _super);
+    function UsageError() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return UsageError;
+}(Error));
+exports.UsageError = UsageError;
 var Command = /** @class */ (function () {
     function Command(name, opts) {
         this.description = "No description provided";
@@ -68,7 +89,7 @@ var Command = /** @class */ (function () {
      * Parse arguments into an object
      * @param argv Raw process arguments, without binary and file location (e.g. `process.argv.slice(2)`)
      */
-    Command.prototype.parse = function (argv) {
+    Command.prototype.parse = function (argv, options) {
         var _this = this;
         var res = {};
         var index = 0;
@@ -96,6 +117,8 @@ var Command = /** @class */ (function () {
                             index++;
                             if (isNaN(parseFloat(argv[index]))) {
                                 _this.renderHelp();
+                                if (options === null || options === void 0 ? void 0 : options.noExit)
+                                    throw new UsageError("Expected a number for option " + (option.name.length > 1 ? "-" : "--") + option.name);
                                 process.exit();
                             }
                             else {
@@ -135,7 +158,7 @@ var Command = /** @class */ (function () {
         if (this.help &&
             (res.h || (this.opt.demandArgument && Object.keys(res).length === 0))) {
             this.renderHelp();
-            process.exit();
+            return false;
         }
         return res;
     };

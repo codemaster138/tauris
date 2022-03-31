@@ -7,7 +7,7 @@ interface Opt {
 }
 
 interface CLIOptionConstructorOptions {
-  alias?: string[];
+  alias?: string[] | string;
   type?: CLIOptionType;
   description?: string;
 }
@@ -15,7 +15,7 @@ interface CLIOptionConstructorOptions {
 class CLIOption {
   constructor(name: string, options?: CLIOptionConstructorOptions) {
     this.name = name;
-    this.alias = options?.alias || [];
+    this.alias = (<string[]>[]).concat(options?.alias || []);
     this.type = options?.type || "text";
     this.description = options?.description || "No description provided";
   }

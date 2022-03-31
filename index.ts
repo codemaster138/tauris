@@ -154,8 +154,10 @@ export class Command {
   clearRoot(names?: string | string[]) {
     this.options = this.options.filter(
       (x) =>
-        x.isRoot &&
-        (names ? (<string[]>[]).concat(names).includes(x.name) : true)
+        !(
+          x.isRoot &&
+          (names ? (<string[]>[]).concat(names).includes(x.name) : true)
+        )
     );
     this.clearedRoots = this.clearedRoots.concat(names || []);
     return this;

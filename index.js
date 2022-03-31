@@ -304,7 +304,7 @@ var Command = /** @class */ (function () {
      */
     Command.prototype.command = function (cmd) {
         cmd.parent = this;
-        cmd.options.concat(this.options.filter(function (x) { return x.isRoot; }));
+        cmd.options = cmd.options.concat(this.options.filter(function (x) { return x.isRoot; }));
         this.subcommands.push(cmd);
         return this;
     };

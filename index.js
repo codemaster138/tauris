@@ -275,13 +275,13 @@ var Command = /** @class */ (function () {
             .forEach(function (option) {
             console.log("  " + chalk_1.cyan(optionToString(option)) + " " + chalk_1.gray(".").repeat(longest - optionToString(option).length) + " " + option.description);
         });
+        console.log();
         console.log(chalk_1.white.bold("Root Options:") + "\n");
         this.options
             .filter(function (x) { return x.isRoot; })
             .forEach(function (option) {
             console.log("  " + chalk_1.cyan(optionToString(option)) + " " + chalk_1.gray(".").repeat(longest - optionToString(option).length) + " " + option.description);
         });
-        console.log();
         console.log();
         if (this.subcommands.length > 0) {
             console.log(chalk_1.white.bold("Commands:") + "\n");

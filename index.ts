@@ -32,6 +32,14 @@ class CLIOption {
   isRoot: boolean;
 }
 
+interface Lang {
+  "Usage:": string;
+  "Commands:": string;
+  "Root Options:": string;
+  "Options:": string;
+  "Display this help message": string;
+}
+
 interface CommandOptions {
   /**
    * When this is set, tauris does not, by default, add a "-h" option.
@@ -40,6 +48,10 @@ interface CommandOptions {
    * instance later
    */
   noDefaultHelpOption?: boolean;
+  /**
+   * Translations of the default UI text
+   */
+  language?: Lang;
 }
 
 export class UsageError extends Error {}
@@ -48,15 +60,20 @@ export class Command {
   constructor(name: string, opts?: CommandOptions) {
     this.name = name;
     this.usageString = `${this.name} [...options]`;
+    this.opts = opts || {};
     if (opts?.noDefaultHelpOption) this.options = [];
     else
       this.options = [
         new CLIOption("h", {
           alias: ["help"],
           type: "boolean",
-          description: "Display this help message",
+          description: this._translate("Display this help message"),
         }),
       ];
+  }
+
+  private _translate(english: keyof Lang): string {
+    return this.opts?.language?.[english] || english;
   }
 
   /**
@@ -251,12 +268,12 @@ export class Command {
     }
 
     console.log(
-      `${white.bold("Usage:")}\n\n  ${gray.bold("$")} ${cyan(
+      `${white.bold(this._translate("Usage:"))}\n\n  ${gray.bold("$")} ${cyan(
         this.usageString
       )}\n`
     );
 
-    console.log(`${white.bold("Options:")}\n`);
+    console.log(`${white.bold(this._translate("Options:"))}\n`);
 
     const optionToString = (option: CLIOption) => {
       return [
@@ -296,8 +313,8 @@ export class Command {
 
     console.log();
 
-    if (this.options.filter(x => x.isRoot).length) {
-      console.log(`${white.bold("Root Options:")}\n`);
+    if (this.options.filter((x) => x.isRoot).length) {
+      console.log(`${white.bold(this._translate("Root Options:"))}\n`);
 
       this.options
         .filter((x) => x.isRoot)
@@ -313,7 +330,7 @@ export class Command {
     }
 
     if (this.subcommands.length > 0) {
-      console.log(`${white.bold("Commands:")}\n`);
+      console.log(`${white.bold(this._translate("Commands:"))}\n`);
 
       this.subcommands.forEach((cmd) => {
         console.log(
@@ -365,6 +382,7 @@ export class Command {
   private helpHeader: string = "";
   private opt: Opt = {};
   private subcommands: Command[] = [];
+  protected opts: CommandOptions;
   protected async callHandler(
     argv: { [key: string]: any } | false | Promise<void>
   ) {

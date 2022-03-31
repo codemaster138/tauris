@@ -85,6 +85,7 @@ exports.UsageError = UsageError;
 var Command = /** @class */ (function () {
     function Command(name, opts) {
         this.description = "No description provided";
+        this.clearedRoots = [];
         this.help = true;
         this.helpHeader = "";
         this.opt = {};
@@ -158,7 +159,11 @@ var Command = /** @class */ (function () {
      * @param names Name(s) of the root options to delete
      */
     Command.prototype.clearRoot = function (names) {
-        this.options = this.options.filter(function (x) { return x.isRoot && (names ? [].concat(names).includes(x.name) : true); });
+        this.options = this.options.filter(function (x) {
+            return x.isRoot &&
+                (names ? [].concat(names).includes(x.name) : true);
+        });
+        this.clearedRoots = this.clearedRoots.concat(names || []);
         return this;
     };
     /**
@@ -323,7 +328,7 @@ var Command = /** @class */ (function () {
     Command.prototype.command = function (cmd) {
         var _a, _b;
         cmd.parent = this;
-        cmd.options = cmd.options.concat(this.options.filter(function (x) { return x.isRoot; }));
+        cmd.options = cmd.options.concat(this.options.filter(function (x) { return x.isRoot && !cmd.clearedRoots.includes(x.name); }));
         if (!((_a = cmd.opts) === null || _a === void 0 ? void 0 : _a.language)) {
             cmd.opts = __assign(__assign({}, (cmd.opts || {})), { language: (_b = this.opts) === null || _b === void 0 ? void 0 : _b.language });
             cmd.options.forEach(function (x) {

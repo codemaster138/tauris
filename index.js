@@ -52,11 +52,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Command = exports.UsageError = void 0;
 var chalk_1 = require("chalk");
 var CLIOption = /** @class */ (function () {
-    function CLIOption(name, options) {
+    function CLIOption(name, options, isRoot) {
         this.name = name;
-        this.alias = (options === null || options === void 0 ? void 0 : options.alias) || [];
+        this.alias = [].concat((options === null || options === void 0 ? void 0 : options.alias) || []);
         this.type = (options === null || options === void 0 ? void 0 : options.type) || "text";
         this.description = (options === null || options === void 0 ? void 0 : options.description) || "No description provided";
+        this.isRoot = isRoot || false;
     }
     return CLIOption;
 }());
@@ -71,6 +72,7 @@ exports.UsageError = UsageError;
 var Command = /** @class */ (function () {
     function Command(name, opts) {
         this.description = "No description provided";
+        this.rootOptions = [];
         this.help = true;
         this.helpHeader = "";
         this.opt = {};
@@ -119,6 +121,29 @@ var Command = /** @class */ (function () {
      */
     Command.prototype.option = function (name, options) {
         this.options.push(new CLIOption(name, options));
+        return this;
+    };
+    /**
+     * Add an option that is automatically carried through to all subcommands and
+     * their subcommands, etc.
+     * @param name Option name
+     * @param options Configuration for option
+     * @returns this
+     */
+    Command.prototype.rootOption = function (name, options) {
+        var opt = new CLIOption(name, options, true);
+        this.options.push(opt);
+        this.rootOptions.push(opt);
+        return this;
+    };
+    /**
+     * Delete a specific root option, list of root options or (if no argument is
+     * given) all root options for this command and all its children
+     * @param names Name(s) of the root options to delete
+     */
+    Command.prototype.clearRoot = function (names) {
+        this.options = this.options.filter(function (x) { return x.isRoot && names && [].concat(names).includes(x.name); });
+        this.rootOptions = this.rootOptions.filter(function (x) { return x.isRoot && names && [].concat(names).includes(x.name); });
         return this;
     };
     /**
@@ -171,7 +196,10 @@ var Command = /** @class */ (function () {
                 var promise = this_1.subcommands
                     .map(function (cmd) {
                     if (cmd.name === stripped) {
-                        return cmd.callHandler(cmd.parse(argv.slice(index + 1), { noPromise: options === null || options === void 0 ? void 0 : options.noPromise, noExit: options === null || options === void 0 ? void 0 : options.noExit }));
+                        return cmd.callHandler(cmd.parse(argv.slice(index + 1), {
+                            noPromise: options === null || options === void 0 ? void 0 : options.noPromise,
+                            noExit: options === null || options === void 0 ? void 0 : options.noExit,
+                        }));
                     }
                     return null;
                 })
@@ -242,9 +270,18 @@ var Command = /** @class */ (function () {
                     .map(function (cmd) { return cmd.name; })
                     .sort(function (a, b) { return b.length - a.length; })[0]) === null || _c === void 0 ? void 0 : _c.length) + 5;
         }
-        this.options.forEach(function (option) {
+        this.options
+            .filter(function (x) { return !x.isRoot; })
+            .forEach(function (option) {
             console.log("  " + chalk_1.cyan(optionToString(option)) + " " + chalk_1.gray(".").repeat(longest - optionToString(option).length) + " " + option.description);
         });
+        console.log(chalk_1.white.bold("Root Options:") + "\n");
+        this.options
+            .filter(function (x) { return x.isRoot; })
+            .forEach(function (option) {
+            console.log("  " + chalk_1.cyan(optionToString(option)) + " " + chalk_1.gray(".").repeat(longest - optionToString(option).length) + " " + option.description);
+        });
+        console.log();
         console.log();
         if (this.subcommands.length > 0) {
             console.log(chalk_1.white.bold("Commands:") + "\n");
@@ -268,6 +305,8 @@ var Command = /** @class */ (function () {
      */
     Command.prototype.command = function (cmd) {
         cmd.parent = this;
+        cmd.options.concat(this.rootOptions); // Add rootOptions as options for command
+        cmd.rootOptions.concat(this.rootOptions); // Then make sure it carries them through to children
         this.subcommands.push(cmd);
         return this;
     };

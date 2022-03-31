@@ -3,8 +3,8 @@ title: 'API Reference'
 description: "A reference to Tauris' API"
 ---
 
-## Class `Command`
-The class `Command` is used for both subcommands and your top-level command. The method `parse` takes in `argv` without the binary path and file path. The command's other methods are used to configure it:
+## Class `Command(name: string[, options: CommandOptions])`
+The class `Command` is used for both subcommands and your top-level command. The method `parse` takes in `argv` without the binary path and file path (e.g. process.argv[2]). The command's other methods are used to configure it:
 <br/>
 
 ### Command.option
@@ -19,8 +19,20 @@ The method `Command.option(name: string[, options: CLIOptionOptions])` configure
 Returns the command it was invoked on.
 <br/>
 
+### Command.rootOption
+The method `Command.rootOption(name: string[, options: CLIOptionOptions])` works exactly like `Command.option`, except that the option is passed down to all subcommands.
+
+Returns the command it was invoked on.
+<br/>
+
+### Command.clearRoot
+The method `Command.clearRoot([names: string | string[]])` deletes all root options that were passed on to it. If `names` is provided, only the options whose names were passed to `clearRoot` will be deleted. This also applies to all subcommands.
+
+Returns the command it was invoked on.
+<br/>
+
 ### Command.describe
-The method `Command.describe(message: string)` adds a description to the command. This will be displayed in the help message *if the command is a subcommand*. 
+The method `Command.describe(message: string)` adds a description to the command. This will be displayed in the help message *if the command is a subcommand*.
 
 Returns the command it was invoked on.
 <br/>

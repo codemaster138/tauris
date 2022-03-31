@@ -16,13 +16,16 @@ class CLIOption {
   constructor(
     name: string,
     options?: CLIOptionConstructorOptions,
-    isRoot?: boolean
+    isRoot?: boolean,
+    isDefaultOption?: boolean
   ) {
     this.name = name;
     this.alias = (<string[]>[]).concat(options?.alias || []);
     this.type = options?.type || "text";
     this.description = options?.description || "No description provided";
     this.isRoot = isRoot || false;
+    // For i18n reasons, see usage later in the code:
+    this.isDefaultOption = isDefaultOption || false;
   }
 
   name: string;
@@ -30,6 +33,7 @@ class CLIOption {
   type: CLIOptionType;
   description: string;
   isRoot: boolean;
+  isDefaultOption: boolean;
 }
 
 interface Lang {
@@ -64,11 +68,16 @@ export class Command {
     if (opts?.noDefaultHelpOption) this.options = [];
     else
       this.options = [
-        new CLIOption("h", {
-          alias: ["help"],
-          type: "boolean",
-          description: this._translate("Display this help message"),
-        }),
+        new CLIOption(
+          "h",
+          {
+            alias: ["help"],
+            type: "boolean",
+            description: this._translate("Display this help message"),
+          },
+          false,
+          true
+        ),
       ];
   }
 
@@ -365,8 +374,13 @@ export class Command {
   command(cmd: Command) {
     cmd.parent = this;
     cmd.options = cmd.options.concat(this.options.filter((x) => x.isRoot));
-    if (!cmd.opts?.language)
+    if (!cmd.opts?.language) {
       cmd.opts = { ...(cmd.opts || {}), language: this.opts?.language };
+      cmd.options.forEach((x) => {
+        if (!x.isDefaultOption) return;
+        x.description = cmd._translate(x.description as keyof Lang);
+      });
+    }
     this.subcommands.push(cmd);
     return this;
   }

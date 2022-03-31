@@ -153,8 +153,11 @@ export class Command {
    */
   clearRoot(names?: string | string[]) {
     this.options = this.options.filter(
-      (x) => x.isRoot && (names ? (<string[]>[]).concat(names).includes(x.name) : true)
+      (x) =>
+        x.isRoot &&
+        (names ? (<string[]>[]).concat(names).includes(x.name) : true)
     );
+    this.clearedRoots = this.clearedRoots.concat(names || []);
     return this;
   }
 
@@ -373,7 +376,9 @@ export class Command {
    */
   command(cmd: Command) {
     cmd.parent = this;
-    cmd.options = cmd.options.concat(this.options.filter((x) => x.isRoot));
+    cmd.options = cmd.options.concat(
+      this.options.filter((x) => x.isRoot && !cmd.clearedRoots.includes(x.name))
+    );
     if (!cmd.opts?.language) {
       cmd.opts = { ...(cmd.opts || {}), language: this.opts?.language };
       cmd.options.forEach((x) => {
@@ -393,6 +398,7 @@ export class Command {
   private usageString: string;
   private options: CLIOption[];
   protected name: string;
+  private clearedRoots: string[] = [];
   public parent: Command | undefined;
   private help: boolean = true;
   private helpHeader: string = "";

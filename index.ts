@@ -300,19 +300,21 @@ export class Command {
 
     console.log();
 
-    console.log(`${white.bold("Root Options:")}\n`);
+    if (this.rootOptions.length) {
+      console.log(`${white.bold("Root Options:")}\n`);
 
-    this.options
-      .filter((x) => x.isRoot)
-      .forEach((option) => {
-        console.log(
-          `  ${cyan(optionToString(option))} ${gray(".").repeat(
-            longest - optionToString(option).length
-          )} ${option.description}`
-        );
-      });
+      this.options
+        .filter((x) => x.isRoot)
+        .forEach((option) => {
+          console.log(
+            `  ${cyan(optionToString(option))} ${gray(".").repeat(
+              longest - optionToString(option).length
+            )} ${option.description}`
+          );
+        });
 
-    console.log();
+      console.log();
+    }
 
     if (this.subcommands.length > 0) {
       console.log(`${white.bold("Commands:")}\n`);

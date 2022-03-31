@@ -149,7 +149,7 @@ export class Command {
         const promise = this.subcommands
           .map((cmd) => {
             if (cmd.name === stripped) {
-              return cmd.callHandler(cmd.parse(argv.slice(index + 1)));
+              return cmd.callHandler(cmd.parse(argv.slice(index + 1), { noPromise: options?.noPromise, noExit: options?.noExit }));
             }
             return null;
           })
@@ -298,8 +298,9 @@ export class Command {
   private helpHeader: string = "";
   private opt: Opt = {};
   private subcommands: Command[] = [];
-  protected async callHandler(argv: { [key: string]: any } | false) {
-    if (argv) await this._handler(argv);
+  protected async callHandler(argv: { [key: string]: any } | false | Promise<void>) {
+		const args = await argv;
+    if (args) await this._handler(args);
   }
   protected _handler: (
     this: Command,

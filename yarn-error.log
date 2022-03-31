@@ -29,7 +29,7 @@ Trace:
 npm manifest: 
   {
       "name": "tauris",
-      "version": "1.6.3",
+      "version": "1.7.3",
       "description": "A simple Node.JS argument parser with subcommand support and a beautiful UI",
       "main": "index.js",
       "scripts": {

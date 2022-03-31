@@ -158,7 +158,7 @@ var Command = /** @class */ (function () {
      * @param names Name(s) of the root options to delete
      */
     Command.prototype.clearRoot = function (names) {
-        this.options = this.options.filter(function (x) { return x.isRoot && names && [].concat(names).includes(x.name); });
+        this.options = this.options.filter(function (x) { return x.isRoot && (names ? [].concat(names).includes(x.name) : true); });
         return this;
     };
     /**

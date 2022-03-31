@@ -365,6 +365,8 @@ export class Command {
   command(cmd: Command) {
     cmd.parent = this;
     cmd.options = cmd.options.concat(this.options.filter((x) => x.isRoot));
+    if (!cmd.opts?.language)
+      cmd.opts = { ...(cmd.opts || {}), language: this.opts?.language };
     this.subcommands.push(cmd);
     return this;
   }

@@ -89,20 +89,6 @@ export class Command {
     return this;
   }
 
-  parse(
-    argv: string[],
-    options?: {
-      noExit?: boolean;
-      noPromise?: true;
-    }
-  ): { [key: string]: any } | false;
-  parse(
-    argv: string[],
-    options?: {
-      noExit?: boolean;
-      noPromise?: false;
-    }
-  ): { [key: string]: any } | false | Promise<void>;
   /**
    * Parse arguments into an object. If a command is called, returns a promise so you can await the command.
    * @param argv Raw process arguments, without binary and file location (e.g. `process.argv.slice(2)`)

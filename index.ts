@@ -89,8 +89,22 @@ export class Command {
     return this;
   }
 
+  parse(
+    argv: string[],
+    options?: {
+      noExit?: boolean;
+      noPromise?: true;
+    }
+  ): { [key: string]: any } | false;
+  parse(
+    argv: string[],
+    options?: {
+      noExit?: boolean;
+      noPromise?: false;
+    }
+  ): { [key: string]: any } | false | Promise<void>;
   /**
-   * Parse arguments into an object
+   * Parse arguments into an object. If a command is called, returns a promise so you can await the command.
    * @param argv Raw process arguments, without binary and file location (e.g. `process.argv.slice(2)`)
    */
   parse(
@@ -99,9 +113,10 @@ export class Command {
       /**
        * Throw an error instead of exiting
        */
-      noExit: boolean;
+      noExit?: boolean;
+      noPromise?: boolean;
     }
-  ): { [key: string]: any } | false {
+  ): { [key: string]: any } | false | Promise<void> {
     var res: { [key: string]: any } = {};
     var index = 0;
 
@@ -145,16 +160,16 @@ export class Command {
           res[stripped] = argv[++index] || true;
         }
       } else {
-        let found = false;
-        this.subcommands.forEach((cmd) => {
-          if (cmd.name === stripped) {
-            found = true;
-            cmd.callHandler(cmd.parse(argv.slice(index + 1)));
-          }
-        });
-        if (found) {
-          return false;
-        } else
+        const promise = this.subcommands
+          .map((cmd) => {
+            if (cmd.name === stripped) {
+              return cmd.callHandler(cmd.parse(argv.slice(index + 1)));
+            }
+            return null;
+          })
+          .find((x) => !!x);
+        if (promise) return options?.noPromise ? false : promise;
+        else
           Array.isArray(res.parameters)
             ? res.parameters.push(stripped)
             : (res.parameters = [stripped]);
@@ -264,7 +279,12 @@ export class Command {
    * Called when the command is invoked as a subcommand
    * @param callback Callback
    */
-  handler(callback: (this: Command, argv: { [key: string]: any }) => void) {
+  handler(
+    callback: (
+      this: Command,
+      argv: { [key: string]: any }
+    ) => void | Promise<void>
+  ) {
     this._handler = callback;
     return this;
   }
@@ -292,8 +312,11 @@ export class Command {
   private helpHeader: string = "";
   private opt: Opt = {};
   private subcommands: Command[] = [];
-  protected callHandler(argv: { [key: string]: any } | false) {
-    if (argv) this._handler(argv);
+  protected async callHandler(argv: { [key: string]: any } | false) {
+    if (argv) await this._handler(argv);
   }
-  protected _handler: (this: Command, argv: { [key: string]: any }) => void = () => {};
+  protected _handler: (
+    this: Command,
+    argv: { [key: string]: any }
+  ) => void | Promise<void> = () => {};
 }

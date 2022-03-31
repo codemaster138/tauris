@@ -63,12 +63,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Command = exports.UsageError = void 0;
 var chalk_1 = require("chalk");
 var CLIOption = /** @class */ (function () {
-    function CLIOption(name, options, isRoot) {
+    function CLIOption(name, options, isRoot, isDefaultOption) {
         this.name = name;
         this.alias = [].concat((options === null || options === void 0 ? void 0 : options.alias) || []);
         this.type = (options === null || options === void 0 ? void 0 : options.type) || "text";
         this.description = (options === null || options === void 0 ? void 0 : options.description) || "No description provided";
         this.isRoot = isRoot || false;
+        // For i18n reasons, see usage later in the code:
+        this.isDefaultOption = isDefaultOption || false;
     }
     return CLIOption;
 }());
@@ -99,7 +101,7 @@ var Command = /** @class */ (function () {
                     alias: ["help"],
                     type: "boolean",
                     description: this._translate("Display this help message"),
-                }),
+                }, false, true),
             ];
     }
     Command.prototype._translate = function (english) {
@@ -322,8 +324,14 @@ var Command = /** @class */ (function () {
         var _a, _b;
         cmd.parent = this;
         cmd.options = cmd.options.concat(this.options.filter(function (x) { return x.isRoot; }));
-        if (!((_a = cmd.opts) === null || _a === void 0 ? void 0 : _a.language))
+        if (!((_a = cmd.opts) === null || _a === void 0 ? void 0 : _a.language)) {
             cmd.opts = __assign(__assign({}, (cmd.opts || {})), { language: (_b = this.opts) === null || _b === void 0 ? void 0 : _b.language });
+            cmd.options.forEach(function (x) {
+                if (!x.isDefaultOption)
+                    return;
+                x.description = cmd._translate(x.description);
+            });
+        }
         this.subcommands.push(cmd);
         return this;
     };

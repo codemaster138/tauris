@@ -13,17 +13,23 @@ interface CLIOptionConstructorOptions {
 }
 
 class CLIOption {
-  constructor(name: string, options?: CLIOptionConstructorOptions) {
+  constructor(
+    name: string,
+    options?: CLIOptionConstructorOptions,
+    isRoot?: boolean
+  ) {
     this.name = name;
     this.alias = (<string[]>[]).concat(options?.alias || []);
     this.type = options?.type || "text";
     this.description = options?.description || "No description provided";
+    this.isRoot = isRoot || false;
   }
 
   name: string;
   alias: string[];
   type: CLIOptionType;
   description: string;
+  isRoot: boolean;
 }
 
 interface CommandOptions {
@@ -90,6 +96,47 @@ export class Command {
   }
 
   /**
+   * Add an option that is automatically carried through to all subcommands and
+   * their subcommands, etc.
+   * @param name Option name
+   * @param options Configuration for option
+   * @returns this
+   */
+  rootOption(name: string, options?: CLIOptionConstructorOptions) {
+    const opt = new CLIOption(name, options, true);
+    this.options.push(opt);
+    this.rootOptions.push(opt);
+    return this;
+  }
+
+	/**
+	 * Delete a specific root option, list of root options or (if no argument is
+	 * given) all root options for this command and all its children
+	 * @param names Name(s) of the root options to delete
+	 */
+  clearRoot(name?: string): this;
+	/**
+	 * Delete a specific root option, list of root options or (if no argument is
+	 * given) all root options for this command and all its children
+	 * @param names Name(s) of the root options to delete
+	 */
+  clearRoot(names?: string[]): this;
+	/**
+	 * Delete a specific root option, list of root options or (if no argument is
+	 * given) all root options for this command and all its children
+	 * @param names Name(s) of the root options to delete
+	 */
+  clearRoot(names?: string | string[]) {
+    this.options = this.options.filter(
+      (x) => x.isRoot && names && (<string[]>[]).concat(names).includes(x.name)
+    );
+    this.rootOptions = this.rootOptions.filter(
+      (x) => x.isRoot && names && (<string[]>[]).concat(names).includes(x.name)
+    );
+    return this;
+  }
+
+  /**
    * Parse arguments into an object. If a command is called, returns a promise so you can await the command.
    * @param argv Raw process arguments, without binary and file location (e.g. `process.argv.slice(2)`)
    */
@@ -149,7 +196,12 @@ export class Command {
         const promise = this.subcommands
           .map((cmd) => {
             if (cmd.name === stripped) {
-              return cmd.callHandler(cmd.parse(argv.slice(index + 1), { noPromise: options?.noPromise, noExit: options?.noExit }));
+              return cmd.callHandler(
+                cmd.parse(argv.slice(index + 1), {
+                  noPromise: options?.noPromise,
+                  noExit: options?.noExit,
+                })
+              );
             }
             return null;
           })
@@ -236,13 +288,29 @@ export class Command {
           .sort((a, b) => b.length - a.length)[0]?.length + 5;
     }
 
-    this.options.forEach((option) => {
-      console.log(
-        `  ${cyan(optionToString(option))} ${gray(".").repeat(
-          longest - optionToString(option).length
-        )} ${option.description}`
-      );
-    });
+    this.options
+      .filter((x) => !x.isRoot)
+      .forEach((option) => {
+        console.log(
+          `  ${cyan(optionToString(option))} ${gray(".").repeat(
+            longest - optionToString(option).length
+          )} ${option.description}`
+        );
+      });
+
+    console.log(`${white.bold("Root Options:")}\n`);
+
+    this.options
+      .filter((x) => x.isRoot)
+      .forEach((option) => {
+        console.log(
+          `  ${cyan(optionToString(option))} ${gray(".").repeat(
+            longest - optionToString(option).length
+          )} ${option.description}`
+        );
+      });
+
+    console.log();
 
     console.log();
 
@@ -281,6 +349,8 @@ export class Command {
    */
   command(cmd: Command) {
     cmd.parent = this;
+    cmd.options.concat(this.rootOptions); // Add rootOptions as options for command
+    cmd.rootOptions.concat(this.rootOptions); // Then make sure it carries them through to children
     this.subcommands.push(cmd);
     return this;
   }
@@ -292,14 +362,17 @@ export class Command {
   description: string = "No description provided";
   private usageString: string;
   private options: CLIOption[];
+  protected rootOptions: CLIOption[] = [];
   protected name: string;
   public parent: Command | undefined;
   private help: boolean = true;
   private helpHeader: string = "";
   private opt: Opt = {};
   private subcommands: Command[] = [];
-  protected async callHandler(argv: { [key: string]: any } | false | Promise<void>) {
-		const args = await argv;
+  protected async callHandler(
+    argv: { [key: string]: any } | false | Promise<void>
+  ) {
+    const args = await argv;
     if (args) await this._handler(args);
   }
   protected _handler: (

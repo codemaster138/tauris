@@ -1,6 +1,6 @@
 {
     "name": "tauris",
-    "version": "1.4.3",
+    "version": "1.5.0",
     "description": "A simple Node.JS argument parser with subcommand support and a beautiful UI",
     "main": "index.js",
     "scripts": {

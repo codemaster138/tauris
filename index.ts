@@ -105,7 +105,6 @@ export class Command {
   rootOption(name: string, options?: CLIOptionConstructorOptions) {
     const opt = new CLIOption(name, options, true);
     this.options.push(opt);
-    this.rootOptions.push(opt);
     return this;
   }
 
@@ -128,9 +127,6 @@ export class Command {
    */
   clearRoot(names?: string | string[]) {
     this.options = this.options.filter(
-      (x) => x.isRoot && names && (<string[]>[]).concat(names).includes(x.name)
-    );
-    this.rootOptions = this.rootOptions.filter(
       (x) => x.isRoot && names && (<string[]>[]).concat(names).includes(x.name)
     );
     return this;
@@ -300,7 +296,7 @@ export class Command {
 
     console.log();
 
-    if (this.rootOptions.length) {
+    if (this.options.filter(x => x.isRoot).length) {
       console.log(`${white.bold("Root Options:")}\n`);
 
       this.options
@@ -351,8 +347,7 @@ export class Command {
    */
   command(cmd: Command) {
     cmd.parent = this;
-    cmd.options.concat(this.rootOptions); // Add rootOptions as options for command
-    cmd.rootOptions.concat(this.rootOptions); // Then make sure it carries them through to children
+    cmd.options.concat(this.options.filter((x) => x.isRoot));
     this.subcommands.push(cmd);
     return this;
   }
@@ -364,7 +359,6 @@ export class Command {
   description: string = "No description provided";
   private usageString: string;
   private options: CLIOption[];
-  protected rootOptions: CLIOption[] = [];
   protected name: string;
   public parent: Command | undefined;
   private help: boolean = true;

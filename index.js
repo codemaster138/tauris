@@ -72,7 +72,6 @@ exports.UsageError = UsageError;
 var Command = /** @class */ (function () {
     function Command(name, opts) {
         this.description = "No description provided";
-        this.rootOptions = [];
         this.help = true;
         this.helpHeader = "";
         this.opt = {};
@@ -133,7 +132,6 @@ var Command = /** @class */ (function () {
     Command.prototype.rootOption = function (name, options) {
         var opt = new CLIOption(name, options, true);
         this.options.push(opt);
-        this.rootOptions.push(opt);
         return this;
     };
     /**
@@ -143,7 +141,6 @@ var Command = /** @class */ (function () {
      */
     Command.prototype.clearRoot = function (names) {
         this.options = this.options.filter(function (x) { return x.isRoot && names && [].concat(names).includes(x.name); });
-        this.rootOptions = this.rootOptions.filter(function (x) { return x.isRoot && names && [].concat(names).includes(x.name); });
         return this;
     };
     /**
@@ -276,7 +273,7 @@ var Command = /** @class */ (function () {
             console.log("  " + chalk_1.cyan(optionToString(option)) + " " + chalk_1.gray(".").repeat(longest - optionToString(option).length) + " " + option.description);
         });
         console.log();
-        if (this.rootOptions.length) {
+        if (this.options.filter(function (x) { return x.isRoot; }).length) {
             console.log(chalk_1.white.bold("Root Options:") + "\n");
             this.options
                 .filter(function (x) { return x.isRoot; })
@@ -307,8 +304,7 @@ var Command = /** @class */ (function () {
      */
     Command.prototype.command = function (cmd) {
         cmd.parent = this;
-        cmd.options.concat(this.rootOptions); // Add rootOptions as options for command
-        cmd.rootOptions.concat(this.rootOptions); // Then make sure it carries them through to children
+        cmd.options.concat(this.options.filter(function (x) { return x.isRoot; }));
         this.subcommands.push(cmd);
         return this;
     };

@@ -347,7 +347,7 @@ export class Command {
    */
   command(cmd: Command) {
     cmd.parent = this;
-    cmd.options.concat(this.options.filter((x) => x.isRoot));
+    cmd.options = cmd.options.concat(this.options.filter((x) => x.isRoot));
     this.subcommands.push(cmd);
     return this;
   }

@@ -160,8 +160,8 @@ var Command = /** @class */ (function () {
      */
     Command.prototype.clearRoot = function (names) {
         this.options = this.options.filter(function (x) {
-            return x.isRoot &&
-                (names ? [].concat(names).includes(x.name) : true);
+            return !(x.isRoot &&
+                (names ? [].concat(names).includes(x.name) : true));
         });
         this.clearedRoots = this.clearedRoots.concat(names || []);
         return this;

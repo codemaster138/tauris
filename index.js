@@ -79,6 +79,7 @@ var Command = /** @class */ (function () {
         this._handler = function () { };
         this.name = name;
         this.usageString = this.name + " [...options]";
+        this.opts = opts || {};
         if (opts === null || opts === void 0 ? void 0 : opts.noDefaultHelpOption)
             this.options = [];
         else
@@ -86,10 +87,14 @@ var Command = /** @class */ (function () {
                 new CLIOption("h", {
                     alias: ["help"],
                     type: "boolean",
-                    description: "Display this help message",
+                    description: this._translate("Display this help message"),
                 }),
             ];
     }
+    Command.prototype._translate = function (english) {
+        var _a, _b;
+        return ((_b = (_a = this.opts) === null || _a === void 0 ? void 0 : _a.language) === null || _b === void 0 ? void 0 : _b[english]) || english;
+    };
     /**
      * Add a description
      * @param message description
@@ -248,8 +253,8 @@ var Command = /** @class */ (function () {
             console.log(this.helpHeader);
             console.log();
         }
-        console.log(chalk_1.white.bold("Usage:") + "\n\n  " + chalk_1.gray.bold("$") + " " + chalk_1.cyan(this.usageString) + "\n");
-        console.log(chalk_1.white.bold("Options:") + "\n");
+        console.log(chalk_1.white.bold(this._translate("Usage:")) + "\n\n  " + chalk_1.gray.bold("$") + " " + chalk_1.cyan(this.usageString) + "\n");
+        console.log(chalk_1.white.bold(this._translate("Options:")) + "\n");
         var optionToString = function (option) {
             return [
                 (option.name.length === 1 ? "-" : "--") + option.name,
@@ -274,7 +279,7 @@ var Command = /** @class */ (function () {
         });
         console.log();
         if (this.options.filter(function (x) { return x.isRoot; }).length) {
-            console.log(chalk_1.white.bold("Root Options:") + "\n");
+            console.log(chalk_1.white.bold(this._translate("Root Options:")) + "\n");
             this.options
                 .filter(function (x) { return x.isRoot; })
                 .forEach(function (option) {
@@ -283,7 +288,7 @@ var Command = /** @class */ (function () {
             console.log();
         }
         if (this.subcommands.length > 0) {
-            console.log(chalk_1.white.bold("Commands:") + "\n");
+            console.log(chalk_1.white.bold(this._translate("Commands:")) + "\n");
             this.subcommands.forEach(function (cmd) {
                 console.log("  " + chalk_1.cyan(cmd.name) + " " + chalk_1.gray(".").repeat(longest - cmd.name.length) + " " + cmd.description);
             });

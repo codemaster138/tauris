@@ -109,23 +109,23 @@ export class Command {
     return this;
   }
 
-	/**
-	 * Delete a specific root option, list of root options or (if no argument is
-	 * given) all root options for this command and all its children
-	 * @param names Name(s) of the root options to delete
-	 */
+  /**
+   * Delete a specific root option, list of root options or (if no argument is
+   * given) all root options for this command and all its children
+   * @param names Name(s) of the root options to delete
+   */
   clearRoot(name?: string): this;
-	/**
-	 * Delete a specific root option, list of root options or (if no argument is
-	 * given) all root options for this command and all its children
-	 * @param names Name(s) of the root options to delete
-	 */
+  /**
+   * Delete a specific root option, list of root options or (if no argument is
+   * given) all root options for this command and all its children
+   * @param names Name(s) of the root options to delete
+   */
   clearRoot(names?: string[]): this;
-	/**
-	 * Delete a specific root option, list of root options or (if no argument is
-	 * given) all root options for this command and all its children
-	 * @param names Name(s) of the root options to delete
-	 */
+  /**
+   * Delete a specific root option, list of root options or (if no argument is
+   * given) all root options for this command and all its children
+   * @param names Name(s) of the root options to delete
+   */
   clearRoot(names?: string | string[]) {
     this.options = this.options.filter(
       (x) => x.isRoot && names && (<string[]>[]).concat(names).includes(x.name)
@@ -298,6 +298,8 @@ export class Command {
         );
       });
 
+    console.log();
+
     console.log(`${white.bold("Root Options:")}\n`);
 
     this.options
@@ -309,8 +311,6 @@ export class Command {
           )} ${option.description}`
         );
       });
-
-    console.log();
 
     console.log();
 

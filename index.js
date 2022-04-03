@@ -83,7 +83,11 @@ var UsageError = /** @class */ (function (_super) {
 }(Error));
 exports.UsageError = UsageError;
 var Command = /** @class */ (function () {
-    function Command(name, opts) {
+    function Command(name, 
+    /**
+     * @deprecated use `.language()` and `.noHelp` instead
+     */
+    opts) {
         this.description = "No description provided";
         this.clearedRoots = [];
         this.help = true;
@@ -105,9 +109,17 @@ var Command = /** @class */ (function () {
                 }, false, true),
             ];
     }
+    Command.prototype.clone = function () {
+        var c = Object.assign(Object.create(Object.getPrototypeOf(this)), this);
+        return c;
+    };
     Command.prototype._translate = function (english) {
         var _a, _b;
         return ((_b = (_a = this.opts) === null || _a === void 0 ? void 0 : _a.language) === null || _b === void 0 ? void 0 : _b[english]) || english;
+    };
+    Command.prototype.language = function (lang) {
+        this.opts.language = lang;
+        return this;
     };
     /**
      * Add a description
@@ -122,6 +134,7 @@ var Command = /** @class */ (function () {
      */
     Command.prototype.noHelp = function () {
         this.help = false;
+        this.options = this.options.filter(function (x) { return !(x.isDefaultOption && x.name === "h"); });
         return this;
     };
     /**
@@ -172,6 +185,7 @@ var Command = /** @class */ (function () {
      */
     Command.prototype.parse = function (argv, options) {
         var _this = this;
+        var _a;
         var res = {};
         var index = 0;
         var _loop_1 = function () {
@@ -213,7 +227,7 @@ var Command = /** @class */ (function () {
                 }
             }
             else {
-                var promise = this_1.subcommands
+                var promise = (_a = this_1.subcommands
                     .map(function (cmd) {
                     if (cmd.name === stripped) {
                         return cmd.callHandler(cmd.parse(argv.slice(index + 1), {
@@ -223,7 +237,7 @@ var Command = /** @class */ (function () {
                     }
                     return null;
                 })
-                    .find(function (x) { return !!x; });
+                    .find(function (x) { return !!x; })) === null || _a === void 0 ? void 0 : _a.then(function (x) { return ((options === null || options === void 0 ? void 0 : options.noExit) ? x : process.exit(x || 0)); });
                 if (promise)
                     return { value: (options === null || options === void 0 ? void 0 : options.noPromise) ? false : promise };
                 else
@@ -351,11 +365,9 @@ var Command = /** @class */ (function () {
                     case 0: return [4 /*yield*/, argv];
                     case 1:
                         args = _a.sent();
-                        if (!args) return [3 /*break*/, 3];
+                        if (!(args && typeof args !== "number")) return [3 /*break*/, 3];
                         return [4 /*yield*/, this._handler(args)];
-                    case 2:
-                        _a.sent();
-                        _a.label = 3;
+                    case 2: return [2 /*return*/, _a.sent()];
                     case 3: return [2 /*return*/];
                 }
             });

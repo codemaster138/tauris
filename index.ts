@@ -61,7 +61,13 @@ interface CommandOptions {
 export class UsageError extends Error {}
 
 export class Command {
-  constructor(name: string, opts?: CommandOptions) {
+  constructor(
+    name: string,
+    /**
+     * @deprecated use `.language()` and `.noHelp` instead
+     */
+    opts?: CommandOptions
+  ) {
     this.name = name;
     this.usageString = `${this.name} [...options]`;
     this.opts = opts || {};
@@ -81,8 +87,18 @@ export class Command {
       ];
   }
 
+  clone(): Command {
+    const c = Object.assign(Object.create(Object.getPrototypeOf(this)), this);
+    return c;
+  }
+
   private _translate(english: keyof Lang): string {
     return this.opts?.language?.[english] || english;
+  }
+
+  language(lang: Lang) {
+    this.opts.language = lang;
+    return this;
   }
 
   /**
@@ -99,6 +115,9 @@ export class Command {
    */
   noHelp() {
     this.help = false;
+    this.options = this.options.filter(
+      (x) => !(x.isDefaultOption && x.name === "h")
+    );
     return this;
   }
 
@@ -232,7 +251,8 @@ export class Command {
             }
             return null;
           })
-          .find((x) => !!x);
+          .find((x) => !!x)
+          ?.then((x) => (options?.noExit ? x : process.exit(x || 0)));
         if (promise) return options?.noPromise ? false : promise;
         else
           Array.isArray(res.parameters)
@@ -366,7 +386,7 @@ export class Command {
     callback: (
       this: Command,
       argv: { [key: string]: any }
-    ) => void | Promise<void>
+    ) => number | void | Promise<number | void>
   ) {
     this._handler = callback;
     return this;
@@ -409,12 +429,12 @@ export class Command {
   protected opts: CommandOptions;
   protected async callHandler(
     argv: { [key: string]: any } | false | Promise<void>
-  ) {
+  ): Promise<number | void> {
     const args = await argv;
-    if (args) await this._handler(args);
+    if (args && typeof args !== "number") return await this._handler(args);
   }
   protected _handler: (
     this: Command,
     argv: { [key: string]: any }
-  ) => void | Promise<void> = () => {};
+  ) => number | void | Promise<number | void> = () => {};
 }

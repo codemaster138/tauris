@@ -207,6 +207,4 @@ You can contribute to `tauris` in many ways like creating new features, fixing b
 
 # ⚖️ License
 
-The quick brown fox jumped over the lazy dog
-
 Copyright © 2020-present – John Sarjeant. Released under the [MIT](/LICENSE) license.

@@ -1,4 +1,10 @@
-import { cyan, gray, white } from "chalk";
+const cyan = (t: string) => `\x1b[36m${t}\x1b[0m`;
+
+const gray = (t: string) => `\x1b[90m${t}\x1b[0m`;
+const grayBold = (t: string) => `\x1b[90;1m${t}\x1b[0m`;
+
+const white = (t: string) => `\x1b[97m${t}\x1b[0m`;
+const whiteBold = (t: string) => `\x1b[97;1m${t}\x1b[0m`;
 
 type CLIOptionType = "number" | "text" | "boolean";
 
@@ -302,12 +308,12 @@ export class Command {
     }
 
     console.log(
-      `${white.bold(this._translate("Usage:"))}\n\n  ${gray.bold("$")} ${cyan(
+      `${whiteBold(this._translate("Usage:"))}\n\n  ${grayBold("$")} ${cyan(
         this.usageString
       )}\n`
     );
 
-    console.log(`${white.bold(this._translate("Options:"))}\n`);
+    console.log(`${whiteBold(this._translate("Options:"))}\n`);
 
     const optionToString = (option: CLIOption) => {
       return [
@@ -348,7 +354,7 @@ export class Command {
     console.log();
 
     if (this.options.filter((x) => x.isRoot).length) {
-      console.log(`${white.bold(this._translate("Root Options:"))}\n`);
+      console.log(`${whiteBold(this._translate("Root Options:"))}\n`);
 
       this.options
         .filter((x) => x.isRoot)
@@ -364,7 +370,7 @@ export class Command {
     }
 
     if (this.subcommands.length > 0) {
-      console.log(`${white.bold(this._translate("Commands:"))}\n`);
+      console.log(`${whiteBold(this._translate("Commands:"))}\n`);
 
       this.subcommands.forEach((cmd) => {
         console.log(

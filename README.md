@@ -2,10 +2,10 @@
 <h3>Tauris</h1>
 <p><b>Better Node.js CLIs</b></p>
 <p>
-<img alt="npm" src="https://img.shields.io/npm/v/tauris">
-<img alt="NPM" src="https://img.shields.io/npm/l/tauris">
-<img alt="npm" src="https://img.shields.io/npm/dt/tauris?color=green">
-<img alt="GitHub issues" src="https://img.shields.io/github/issues/codemaster138/tauris?color=green">
+<img alt="npm" src="https://img.shields.io/npm/v/tauris?color=red&style=for-the-badge">
+<img alt="NPM" src="https://img.shields.io/npm/l/tauris?color=orange&style=for-the-badge">
+<img alt="npm" src="https://img.shields.io/npm/dt/tauris?color=yellow&style=for-the-badge">
+<img alt="GitHub issues" src="https://img.shields.io/github/issues/codemaster138/tauris?color=green&style=for-the-badge">
 </p>
 <p>Built with ❤️ by <a href="https://github.com/codemaster138">@codemaster138</a></p>
 </div>
@@ -207,4 +207,5 @@ You can contribute to `tauris` in many ways like creating new features, fixing b
 
 # ⚖️ License
 
-Copyright © 2020-present – John Sarjeant. Released under the [MIT](/LICENSE) license.
+<p align="center">Copyright © 2020-present – John Sarjeant</p>
+<p align="center"><img alt="MIT license" src="https://img.shields.io/badge/license-mit-orange?style=for-the-badge"/></p>

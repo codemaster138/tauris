@@ -61,7 +61,11 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Command = exports.UsageError = void 0;
-var chalk_1 = require("chalk");
+var cyan = function (t) { return "\u001B[36m" + t + "\u001B[0m"; };
+var gray = function (t) { return "\u001B[90m" + t + "\u001B[0m"; };
+var grayBold = function (t) { return "\u001B[90;1m" + t + "\u001B[0m"; };
+var white = function (t) { return "\u001B[97m" + t + "\u001B[0m"; };
+var whiteBold = function (t) { return "\u001B[97;1m" + t + "\u001B[0m"; };
 var CLIOption = /** @class */ (function () {
     function CLIOption(name, options, isRoot, isDefaultOption) {
         this.name = name;
@@ -285,8 +289,8 @@ var Command = /** @class */ (function () {
             console.log(this.helpHeader);
             console.log();
         }
-        console.log(chalk_1.white.bold(this._translate("Usage:")) + "\n\n  " + chalk_1.gray.bold("$") + " " + chalk_1.cyan(this.usageString) + "\n");
-        console.log(chalk_1.white.bold(this._translate("Options:")) + "\n");
+        console.log(whiteBold(this._translate("Usage:")) + "\n\n  " + grayBold("$") + " " + cyan(this.usageString) + "\n");
+        console.log(whiteBold(this._translate("Options:")) + "\n");
         var optionToString = function (option) {
             return [
                 (option.name.length === 1 ? "-" : "--") + option.name,
@@ -307,22 +311,22 @@ var Command = /** @class */ (function () {
         this.options
             .filter(function (x) { return !x.isRoot; })
             .forEach(function (option) {
-            console.log("  " + chalk_1.cyan(optionToString(option)) + " " + chalk_1.gray(".").repeat(longest - optionToString(option).length) + " " + option.description);
+            console.log("  " + cyan(optionToString(option)) + " " + gray(".").repeat(longest - optionToString(option).length) + " " + option.description);
         });
         console.log();
         if (this.options.filter(function (x) { return x.isRoot; }).length) {
-            console.log(chalk_1.white.bold(this._translate("Root Options:")) + "\n");
+            console.log(whiteBold(this._translate("Root Options:")) + "\n");
             this.options
                 .filter(function (x) { return x.isRoot; })
                 .forEach(function (option) {
-                console.log("  " + chalk_1.cyan(optionToString(option)) + " " + chalk_1.gray(".").repeat(longest - optionToString(option).length) + " " + option.description);
+                console.log("  " + cyan(optionToString(option)) + " " + gray(".").repeat(longest - optionToString(option).length) + " " + option.description);
             });
             console.log();
         }
         if (this.subcommands.length > 0) {
-            console.log(chalk_1.white.bold(this._translate("Commands:")) + "\n");
+            console.log(whiteBold(this._translate("Commands:")) + "\n");
             this.subcommands.forEach(function (cmd) {
-                console.log("  " + chalk_1.cyan(cmd.name) + " " + chalk_1.gray(".").repeat(longest - cmd.name.length) + " " + cmd.description);
+                console.log("  " + cyan(cmd.name) + " " + gray(".").repeat(longest - cmd.name.length) + " " + cmd.description);
             });
             console.log();
         }

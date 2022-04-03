@@ -1,9 +1,9 @@
 {
     "name": "tauris",
-    "version": "1.7.5",
+    "version": "1.8.0",
     "description": "A simple Node.JS argument parser with subcommand support and a beautiful UI",
     "main": "index.js",
-	"types": "index.ts",
+    "types": "index.ts",
     "files": [
         "index.js"
     ],
@@ -11,7 +11,7 @@
         "build": "tsc",
         "prepublish": "yarn build",
         "postpublish": "git add . && git commit -m \"chore: compile & publish\"",
-		"minify": "terser -o index.js --compress passes=128,keep_fargs=false,unsafe_methods=true --mangle --ecma 6 -- index.js"
+        "minify": "terser -o index.js --compress passes=128,keep_fargs=false,unsafe_methods=true --mangle --ecma 6 -- index.js"
     },
     "repository": "https://github.com/codemaster138/node-tauris.git",
     "author": "Jake <pygamer138@gmail.com>",
